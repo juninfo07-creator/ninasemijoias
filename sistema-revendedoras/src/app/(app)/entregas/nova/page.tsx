@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import { EntregaForm } from "@/components/entregas/EntregaForm";
+import { VoltarLink } from "@/components/layout/VoltarLink";
 
 export default async function NovaEntregaPage() {
   const supabase = await createClient();
@@ -16,6 +17,7 @@ export default async function NovaEntregaPage() {
 
   return (
     <div>
+      <VoltarLink href="/entregas" label="Entregas" />
       <h1 className="mb-6 text-xl font-semibold text-neutral-900">Nova entrega</h1>
       {!mostruarios || mostruarios.length === 0 ? (
         <p className="text-sm text-neutral-500">

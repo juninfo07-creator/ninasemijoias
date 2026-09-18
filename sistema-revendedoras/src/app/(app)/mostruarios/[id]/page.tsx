@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import { MostruarioForm } from "@/components/mostruarios/MostruarioForm";
+import { VoltarLink } from "@/components/layout/VoltarLink";
 import { atualizarMostruario, marcarManutencao } from "../actions";
 
 export default async function MostruarioPage({ params }: { params: Promise<{ id: string }> }) {
@@ -17,6 +18,7 @@ export default async function MostruarioPage({ params }: { params: Promise<{ id:
 
   return (
     <div>
+      <VoltarLink href="/mostruarios" label="Mostruários" />
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-xl font-semibold text-neutral-900">{mostruario.nome}</h1>
         {podeAlternarManutencao && (

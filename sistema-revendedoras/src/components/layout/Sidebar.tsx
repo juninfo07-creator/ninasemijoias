@@ -11,6 +11,8 @@ const NAV_ITEMS = [
   { href: "/mostruarios", label: "Mostruários" },
   { href: "/entregas", label: "Entregas" },
   { href: "/conferencias", label: "Conferências" },
+  { href: "/ranking", label: "Ranking" },
+  { href: "/repasses", label: "Repasses" },
   { href: "/configuracoes", label: "Configurações" },
 ] as const;
 

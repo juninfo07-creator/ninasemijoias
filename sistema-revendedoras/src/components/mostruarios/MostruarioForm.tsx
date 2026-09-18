@@ -2,11 +2,13 @@
 
 import { useActionState } from "react";
 import type { Database } from "@/lib/types/database.types";
+import { CampoMoeda } from "@/components/ui/CampoMoeda";
 
 type Mostruario = Database["public"]["Tables"]["mostruarios"]["Row"];
 
 interface FormState {
   error?: string;
+  success?: boolean;
 }
 
 function Field({
@@ -64,14 +66,12 @@ export function MostruarioForm({
       <Field label="Nome/identificação" name="nome" defaultValue={mostruario?.nome} required />
       <div className="grid grid-cols-2 gap-4">
         <Field label="Tamanho" name="tamanho" defaultValue={mostruario?.tamanho} />
-        <Field
-          label="Valor total (R$)"
-          name="valor_total"
-          type="number"
-          step="0.01"
-          defaultValue={mostruario?.valor_total}
-          required
-        />
+        <div className="flex flex-col gap-1">
+          <label htmlFor="valor_total" className="text-sm font-medium text-neutral-700">
+            Valor total
+          </label>
+          <CampoMoeda id="valor_total" name="valor_total" defaultValue={mostruario?.valor_total} required />
+        </div>
       </div>
       <div className="flex flex-col gap-1">
         <label htmlFor="observacoes" className="text-sm font-medium text-neutral-700">
@@ -87,6 +87,7 @@ export function MostruarioForm({
       </div>
 
       {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
+      {state?.success && <p className="text-sm text-green-700">Salvo com sucesso.</p>}
 
       <button
         type="submit"

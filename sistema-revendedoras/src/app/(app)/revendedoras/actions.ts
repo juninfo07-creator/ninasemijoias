@@ -6,6 +6,7 @@ import { createClient } from "@/utils/supabase/server";
 
 export interface RevendedoraState {
   error?: string;
+  success?: boolean;
 }
 
 function fromFormData(formData: FormData) {
@@ -64,7 +65,7 @@ export async function atualizarRevendedora(
 
   revalidatePath("/revendedoras");
   revalidatePath(`/revendedoras/${id}`);
-  return {};
+  return { success: true };
 }
 
 export async function alternarStatusRevendedora(id: string, statusAtual: string) {
@@ -73,4 +74,11 @@ export async function alternarStatusRevendedora(id: string, statusAtual: string)
   await supabase.from("revendedoras").update({ status: novoStatus }).eq("id", id);
   revalidatePath("/revendedoras");
   revalidatePath(`/revendedoras/${id}`);
+}
+
+export async function alterarStatusEmMassa(ids: string[], novoStatus: "Ativa" | "Inativa") {
+  if (ids.length === 0) return;
+  const supabase = await createClient();
+  await supabase.from("revendedoras").update({ status: novoStatus }).in("id", ids);
+  revalidatePath("/revendedoras");
 }

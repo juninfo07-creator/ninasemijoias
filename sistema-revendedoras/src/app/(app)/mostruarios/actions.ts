@@ -6,6 +6,7 @@ import { createClient } from "@/utils/supabase/server";
 
 export interface MostruarioState {
   error?: string;
+  success?: boolean;
 }
 
 function fromFormData(formData: FormData) {
@@ -64,7 +65,7 @@ export async function atualizarMostruario(
 
   revalidatePath("/mostruarios");
   revalidatePath(`/mostruarios/${id}`);
-  return {};
+  return { success: true };
 }
 
 export async function marcarManutencao(id: string, statusAtual: string) {
@@ -73,4 +74,16 @@ export async function marcarManutencao(id: string, statusAtual: string) {
   await supabase.from("mostruarios").update({ status: novoStatus }).eq("id", id);
   revalidatePath("/mostruarios");
   revalidatePath(`/mostruarios/${id}`);
+}
+
+export async function alterarStatusEmMassa(ids: string[], novoStatus: "Disponível" | "Em manutenção/perda") {
+  if (ids.length === 0) return;
+  const supabase = await createClient();
+  // Só afeta mostruários que já estão livres — nunca mexe num que está "Com revendedora".
+  await supabase
+    .from("mostruarios")
+    .update({ status: novoStatus })
+    .in("id", ids)
+    .in("status", ["Disponível", "Em manutenção/perda"]);
+  revalidatePath("/mostruarios");
 }

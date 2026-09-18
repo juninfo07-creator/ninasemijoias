@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { atualizarConfiguracoes, type ConfiguracoesState } from "./actions";
 import type { Database } from "@/lib/types/database.types";
+import { CampoMoeda } from "@/components/ui/CampoMoeda";
 
 type Configuracoes = Database["public"]["Tables"]["configuracoes"]["Row"];
 
@@ -45,13 +46,16 @@ export function ConfiguracoesForm({ configuracoes }: { configuracoes: Configurac
       <section className="flex flex-col gap-4">
         <h2 className="text-sm font-semibold text-neutral-900">Comissão escalonada da revendedora</h2>
         <div className="grid grid-cols-3 gap-4">
-          <Field
-            label="Limite da faixa (R$)"
-            name="limite_faixa_comissao"
-            type="number"
-            step="0.01"
-            defaultValue={configuracoes.limite_faixa_comissao}
-          />
+          <div className="flex flex-col gap-1">
+            <label htmlFor="limite_faixa_comissao" className="text-sm font-medium text-neutral-700">
+              Limite da faixa
+            </label>
+            <CampoMoeda
+              id="limite_faixa_comissao"
+              name="limite_faixa_comissao"
+              defaultValue={configuracoes.limite_faixa_comissao}
+            />
+          </div>
           <Field
             label="% abaixo do limite"
             name="percentual_revendedora_abaixo"

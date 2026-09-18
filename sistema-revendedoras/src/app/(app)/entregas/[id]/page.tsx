@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import { formatarDataBR, classificarStatusConferencia } from "@/lib/financeiro/datas";
+import { VoltarLink } from "@/components/layout/VoltarLink";
 
 export default async function EntregaPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -28,6 +29,7 @@ export default async function EntregaPage({ params }: { params: Promise<{ id: st
 
   return (
     <div className="flex flex-col gap-6">
+      <VoltarLink href="/entregas" label="Entregas" />
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-semibold text-neutral-900">{entrega.revendedoras?.nome_completo}</h1>
@@ -61,8 +63,8 @@ export default async function EntregaPage({ params }: { params: Promise<{ id: st
           </p>
         </div>
         <div>
-          <span className="text-neutral-500">Valor em posse da revendedora</span>
-          <p>{entrega.valor_atual.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</p>
+          <span className="text-neutral-500">Valor entregue</span>
+          <p>{entrega.valor_total_entrega.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</p>
         </div>
       </div>
 
@@ -76,7 +78,7 @@ export default async function EntregaPage({ params }: { params: Promise<{ id: st
       )}
 
       <div>
-        <h2 className="mb-2 text-sm font-semibold text-neutral-900">Histórico de conferências</h2>
+        <h2 className="mb-2 text-sm font-semibold text-neutral-900">Conferência</h2>
         {!conferencias || conferencias.length === 0 ? (
           <p className="text-sm text-neutral-500">Nenhuma conferência registrada ainda.</p>
         ) : (
@@ -85,7 +87,9 @@ export default async function EntregaPage({ params }: { params: Promise<{ id: st
               <div key={c.id} className="rounded-md border border-neutral-200 p-3 text-sm">
                 <div className="flex items-center justify-between">
                   <span className="font-medium">
-                    {c.tipo} — {formatarDataBR(c.data_realizada)}
+                    <Link href={`/conferencias/${c.id}`} className="hover:underline">
+                      {formatarDataBR(c.data_realizada)}
+                    </Link>
                   </span>
                   <span className="text-neutral-500">
                     Vendido: {c.valor_vendido.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}

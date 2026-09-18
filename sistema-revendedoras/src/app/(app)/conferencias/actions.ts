@@ -3,8 +3,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/utils/supabase/server";
-import { calcularConferencia, calcularSaldoValor } from "@/lib/financeiro/calculo";
-import { calcularProximaConferencia } from "@/lib/financeiro/datas";
+import { calcularConferencia } from "@/lib/financeiro/calculo";
 
 export interface ConferenciaState {
   error?: string;
@@ -15,16 +14,14 @@ export async function registrarConferencia(
   formData: FormData
 ): Promise<ConferenciaState> {
   const entregaId = String(formData.get("entrega_id") ?? "");
-  const tipo = String(formData.get("tipo") ?? "");
   const dataRealizada = String(formData.get("data_realizada") ?? "");
   const valorVendido = Number(formData.get("valor_vendido") || 0);
   const descontos = Number(formData.get("descontos") || 0);
   const acrescimos = Number(formData.get("acrescimos") || 0);
   const valorDevolvido = Number(formData.get("valor_devolvido") || 0);
-  const valorReposicao = Number(formData.get("valor_reposicao") || 0);
   const observacoes = String(formData.get("observacoes") ?? "").trim() || null;
 
-  if (!entregaId || (tipo !== "Parcial" && tipo !== "Final")) {
+  if (!entregaId) {
     return { error: "Dados inválidos." };
   }
 
@@ -62,30 +59,15 @@ export async function registrarConferencia(
     percentualSocia: configuracoes.percentual_socia,
   });
 
-  const valorAtualApos =
-    tipo === "Final"
-      ? 0
-      : calcularSaldoValor(entrega.valor_atual, valorVendido, valorDevolvido, valorReposicao);
-
-  if (tipo === "Parcial" && valorAtualApos < 0) {
-    return { error: "O valor vendido + devolvido não pode ser maior que o saldo atual com a revendedora." };
-  }
-
-  const proximaConferenciaPrevista =
-    tipo === "Parcial" ? calcularProximaConferencia(dataRealizada, entrega.prazo_dias_aplicado) : null;
-
   const { data: novaConferencia, error } = await supabase
     .from("conferencias")
     .insert({
       entrega_id: entregaId,
-      tipo,
       data_realizada: dataRealizada,
       valor_vendido: valorVendido,
       descontos,
       acrescimos,
-      valor_devolvido: tipo === "Parcial" ? valorDevolvido : 0,
-      valor_reposicao: tipo === "Parcial" ? valorReposicao : 0,
-      valor_atual_apos: valorAtualApos,
+      valor_devolvido: valorDevolvido,
       percentual_revendedora_aplicado: resultado.percentualRevendedoraAplicado,
       percentual_empresa_aplicado: resultado.percentualEmpresaAplicado,
       percentual_proprietaria_aplicado: configuracoes.percentual_proprietaria,
@@ -94,7 +76,6 @@ export async function registrarConferencia(
       valor_empresa: resultado.valorEmpresa,
       valor_proprietaria: resultado.valorProprietaria,
       valor_socia: resultado.valorSocia,
-      proxima_conferencia_prevista: proximaConferenciaPrevista,
       observacoes,
     })
     .select("id")
@@ -108,5 +89,6 @@ export async function registrarConferencia(
   revalidatePath("/entregas");
   revalidatePath("/mostruarios");
   revalidatePath("/conferencias");
+  revalidatePath("/dashboard");
   redirect(`/conferencias/${novaConferencia.id}`);
 }

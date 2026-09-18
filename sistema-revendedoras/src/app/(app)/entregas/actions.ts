@@ -43,7 +43,6 @@ export async function criarEntrega(
       responsavel,
       observacoes,
       valor_total_entrega: valorTotalEntrega,
-      valor_atual: valorTotalEntrega,
       excecao_autorizada: excecaoAutorizada,
     })
     .select("id")

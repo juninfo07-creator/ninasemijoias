@@ -7,6 +7,7 @@ type Revendedora = Database["public"]["Tables"]["revendedoras"]["Row"];
 
 interface FormState {
   error?: string;
+  success?: boolean;
 }
 
 function Field({
@@ -78,6 +79,7 @@ export function RevendedoraForm({
       </div>
 
       {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
+      {state?.success && <p className="text-sm text-green-700">Salvo com sucesso.</p>}
 
       <button
         type="submit"

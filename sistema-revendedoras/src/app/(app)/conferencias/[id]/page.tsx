@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import { formatarDataBR } from "@/lib/financeiro/datas";
 import { PagamentoForm } from "@/components/conferencias/PagamentoForm";
+import { CancelarConferenciaButton } from "@/components/conferencias/CancelarConferenciaButton";
 import { cancelarPagamento } from "../pagamentos-actions";
 
 const STATUS_PAGAMENTO_COLOR: Record<string, string> = {
@@ -41,17 +42,24 @@ export default async function ConferenciaPage({ params }: { params: Promise<{ id
 
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <Link href={`/entregas/${conferencia.entrega_id}`} className="text-sm text-neutral-500 hover:underline">
-          ← Voltar pra entrega
-        </Link>
-        <h1 className="mt-1 text-xl font-semibold text-neutral-900">
-          Conferência {conferencia.tipo} — {formatarDataBR(conferencia.data_realizada)}
-        </h1>
-        <p className="text-sm text-neutral-500">
-          {conferencia.entregas?.revendedoras?.nome_completo} — {conferencia.entregas?.mostruarios?.codigo}{" "}
-          {conferencia.entregas?.mostruarios?.nome}
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <Link href={`/entregas/${conferencia.entrega_id}`} className="text-sm text-neutral-500 hover:underline">
+            ← Voltar pra entrega
+          </Link>
+          <h1 className="mt-1 text-xl font-semibold text-neutral-900">
+            Conferência — {formatarDataBR(conferencia.data_realizada)}
+          </h1>
+          <p className="text-sm text-neutral-500">
+            {conferencia.entregas?.revendedoras?.nome_completo} — {conferencia.entregas?.mostruarios?.codigo}{" "}
+            {conferencia.entregas?.mostruarios?.nome}
+          </p>
+        </div>
+        {conferencia.status === "Ativa" ? (
+          <CancelarConferenciaButton conferenciaId={id} />
+        ) : (
+          <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-xs text-neutral-600">Cancelada</span>
+        )}
       </div>
 
       <div className="grid grid-cols-2 gap-4 rounded-md border border-neutral-200 p-4 text-sm">
@@ -73,12 +81,6 @@ export default async function ConferenciaPage({ params }: { params: Promise<{ id
             {fmt(conferencia.valor_proprietaria)} / {fmt(conferencia.valor_socia)}
           </p>
         </div>
-        {conferencia.proxima_conferencia_prevista && (
-          <div>
-            <span className="text-neutral-500">Próxima conferência</span>
-            <p>{formatarDataBR(conferencia.proxima_conferencia_prevista)}</p>
-          </div>
-        )}
       </div>
 
       <div>

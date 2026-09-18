@@ -48,12 +48,3 @@ export function calcularConferencia(
     valorSocia,
   };
 }
-
-export function calcularSaldoValor(
-  valorAtual: number,
-  valorVendido: number,
-  valorDevolvido: number,
-  valorReposicao: number
-): number {
-  return round2(valorAtual - valorVendido - valorDevolvido + valorReposicao);
-}

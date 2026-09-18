@@ -27,16 +27,12 @@ export type Database = {
           percentual_proprietaria_aplicado: number
           percentual_revendedora_aplicado: number
           percentual_socia_aplicado: number
-          proxima_conferencia_prevista: string | null
           status: string
-          tipo: string
           updated_at: string
-          valor_atual_apos: number
           valor_comissao_revendedora: number
           valor_devolvido: number
           valor_empresa: number
           valor_proprietaria: number
-          valor_reposicao: number
           valor_socia: number
           valor_vendido: number
         }
@@ -52,16 +48,12 @@ export type Database = {
           percentual_proprietaria_aplicado: number
           percentual_revendedora_aplicado: number
           percentual_socia_aplicado: number
-          proxima_conferencia_prevista?: string | null
           status?: string
-          tipo: string
           updated_at?: string
-          valor_atual_apos: number
           valor_comissao_revendedora: number
           valor_devolvido?: number
           valor_empresa: number
           valor_proprietaria: number
-          valor_reposicao?: number
           valor_socia: number
           valor_vendido?: number
         }
@@ -77,16 +69,12 @@ export type Database = {
           percentual_proprietaria_aplicado?: number
           percentual_revendedora_aplicado?: number
           percentual_socia_aplicado?: number
-          proxima_conferencia_prevista?: string | null
           status?: string
-          tipo?: string
           updated_at?: string
-          valor_atual_apos?: number
           valor_comissao_revendedora?: number
           valor_devolvido?: number
           valor_empresa?: number
           valor_proprietaria?: number
-          valor_reposicao?: number
           valor_socia?: number
           valor_vendido?: number
         }
@@ -160,7 +148,6 @@ export type Database = {
           revendedora_id: string
           status: string
           updated_at: string
-          valor_atual: number
           valor_total_entrega: number
         }
         Insert: {
@@ -177,7 +164,6 @@ export type Database = {
           revendedora_id: string
           status?: string
           updated_at?: string
-          valor_atual: number
           valor_total_entrega: number
         }
         Update: {
@@ -194,7 +180,6 @@ export type Database = {
           revendedora_id?: string
           status?: string
           updated_at?: string
-          valor_atual?: number
           valor_total_entrega?: number
         }
         Relationships: [
@@ -389,7 +374,6 @@ export type Database = {
           conferencia_id: string | null
           data_realizada: string | null
           entrega_id: string | null
-          mais_recente: boolean | null
           status_pagamento: string | null
           valor_empresa: number | null
           valor_pago: number | null

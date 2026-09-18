@@ -39,7 +39,7 @@ export default async function DashboardPage() {
       .from("conferencias")
       .select("valor_vendido, valor_comissao_revendedora, valor_proprietaria, valor_socia")
       .eq("status", "Ativa"),
-    supabase.from("v_conferencias_saldo").select("valor_pendente").eq("mais_recente", true),
+    supabase.from("v_conferencias_saldo").select("valor_pendente"),
     supabase.from("repasses").select("valor").eq("status", "Ativo"),
     supabase.from("revendedoras").select("id, nome_completo").order("nome_completo"),
   ]);
@@ -94,6 +94,7 @@ export default async function DashboardPage() {
                   <th className="px-4 py-2">Entrega</th>
                   <th className="px-4 py-2">Prevista</th>
                   <th className="px-4 py-2">Status</th>
+                  <th className="px-4 py-2"></th>
                 </tr>
               </thead>
               <tbody>
@@ -113,6 +114,14 @@ export default async function DashboardPage() {
                       <span className={`rounded-full px-2 py-0.5 text-xs ${STATUS_COLOR[e.statusConf]}`}>
                         {e.statusConf}
                       </span>
+                    </td>
+                    <td className="px-4 py-2">
+                      <Link
+                        href={`/conferencias/nova?entregaId=${e.id}`}
+                        className="text-xs font-medium text-neutral-900 hover:underline"
+                      >
+                        Registrar conferência
+                      </Link>
                     </td>
                   </tr>
                 ))}

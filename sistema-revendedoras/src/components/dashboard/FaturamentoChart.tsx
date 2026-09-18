@@ -4,22 +4,11 @@ import { useEffect, useState, useTransition } from "react";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { buscarFaturamento, type PontoFaturamento } from "@/app/(app)/dashboard/actions";
 import { hojeBrasilia } from "@/lib/financeiro/datas";
+import { PRESETS_RAPIDOS, calcularIntervalo, inicioHaMeses, type PresetPeriodo } from "@/lib/financeiro/periodo";
 
 interface Revendedora {
   id: string;
   nome_completo: string;
-}
-
-const PRESETS = [
-  { label: "3 meses", meses: 3 },
-  { label: "6 meses", meses: 6 },
-  { label: "12 meses", meses: 12 },
-] as const;
-
-function inicioHaMeses(meses: number): string {
-  const [ano, mes] = hojeBrasilia().split("-").map(Number);
-  const data = new Date(Date.UTC(ano, mes - 1 - (meses - 1), 1));
-  return data.toISOString().slice(0, 10);
 }
 
 function formatarMes(mes: string) {
@@ -31,7 +20,7 @@ function formatarMes(mes: string) {
 const fmt = (n: number) => n.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
 export function FaturamentoChart({ revendedoras }: { revendedoras: Revendedora[] }) {
-  const [presetMeses, setPresetMeses] = useState<number | "personalizado">(6);
+  const [preset, setPreset] = useState<PresetPeriodo>(6);
   const [inicioCustom, setInicioCustom] = useState(inicioHaMeses(6));
   const [fimCustom, setFimCustom] = useState(hojeBrasilia());
   const [revendedoraId, setRevendedoraId] = useState("");
@@ -39,8 +28,7 @@ export function FaturamentoChart({ revendedoras }: { revendedoras: Revendedora[]
   const [pending, startTransition] = useTransition();
 
   useEffect(() => {
-    const inicio = presetMeses === "personalizado" ? inicioCustom : inicioHaMeses(presetMeses);
-    const fim = presetMeses === "personalizado" ? fimCustom : hojeBrasilia();
+    const { inicio, fim } = calcularIntervalo(preset, inicioCustom, fimCustom);
 
     startTransition(async () => {
       const resultado = await buscarFaturamento({
@@ -51,7 +39,7 @@ export function FaturamentoChart({ revendedoras }: { revendedoras: Revendedora[]
       setDados(resultado);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [presetMeses, inicioCustom, fimCustom, revendedoraId]);
+  }, [preset, inicioCustom, fimCustom, revendedoraId]);
 
   const total = dados.reduce((s, d) => s + d.valor, 0);
 
@@ -63,13 +51,13 @@ export function FaturamentoChart({ revendedoras }: { revendedoras: Revendedora[]
           <p className="text-xs text-neutral-500">Total no período: {fmt(total)}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          {PRESETS.map((p) => (
+          {PRESETS_RAPIDOS.map((p) => (
             <button
-              key={p.meses}
+              key={p.valor}
               type="button"
-              onClick={() => setPresetMeses(p.meses)}
+              onClick={() => setPreset(p.valor)}
               className={`rounded-full px-3 py-1 text-xs font-medium ${
-                presetMeses === p.meses ? "bg-neutral-900 text-white" : "bg-neutral-100 text-neutral-600"
+                preset === p.valor ? "bg-neutral-900 text-white" : "bg-neutral-100 text-neutral-600"
               }`}
             >
               {p.label}
@@ -77,9 +65,9 @@ export function FaturamentoChart({ revendedoras }: { revendedoras: Revendedora[]
           ))}
           <button
             type="button"
-            onClick={() => setPresetMeses("personalizado")}
+            onClick={() => setPreset("personalizado")}
             className={`rounded-full px-3 py-1 text-xs font-medium ${
-              presetMeses === "personalizado" ? "bg-neutral-900 text-white" : "bg-neutral-100 text-neutral-600"
+              preset === "personalizado" ? "bg-neutral-900 text-white" : "bg-neutral-100 text-neutral-600"
             }`}
           >
             Personalizado
@@ -99,7 +87,7 @@ export function FaturamentoChart({ revendedoras }: { revendedoras: Revendedora[]
         </div>
       </div>
 
-      {presetMeses === "personalizado" && (
+      {preset === "personalizado" && (
         <div className="mb-4 flex items-center gap-2 text-xs">
           <label className="flex items-center gap-1">
             De

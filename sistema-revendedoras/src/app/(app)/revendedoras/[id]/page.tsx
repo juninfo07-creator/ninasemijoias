@@ -1,6 +1,9 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import { RevendedoraForm } from "@/components/revendedoras/RevendedoraForm";
+import { VoltarLink } from "@/components/layout/VoltarLink";
+import { linkWhatsApp } from "@/lib/whatsapp";
+import { formatarDataBR } from "@/lib/financeiro/datas";
 import { atualizarRevendedora, alternarStatusRevendedora } from "../actions";
 
 export default async function RevendedoraPage({ params }: { params: Promise<{ id: string }> }) {
@@ -12,9 +15,15 @@ export default async function RevendedoraPage({ params }: { params: Promise<{ id
     notFound();
   }
 
-  const [{ data: entregas }, { data: configuracoes }] = await Promise.all([
+  const [{ data: entregas }, { data: configuracoes }, { data: entregaAberta }] = await Promise.all([
     supabase.from("entregas").select("id").eq("revendedora_id", id),
     supabase.from("configuracoes").select("limite_faixa_comissao").eq("id", 1).single(),
+    supabase
+      .from("entregas")
+      .select("data_conferencia_prevista")
+      .eq("revendedora_id", id)
+      .eq("status", "Aberta")
+      .maybeSingle(),
   ]);
 
   const entregaIds = (entregas ?? []).map((e) => e.id);
@@ -36,22 +45,41 @@ export default async function RevendedoraPage({ params }: { params: Promise<{ id
 
   const toggleStatus = alternarStatusRevendedora.bind(null, id, revendedora.status);
 
+  const primeiroNome = revendedora.nome_completo.split(" ")[0];
+  const mensagemWhatsApp = entregaAberta
+    ? `Oi ${primeiroNome}! Passando pra lembrar que a conferência do seu mostruário está prevista pra ${formatarDataBR(entregaAberta.data_conferencia_prevista)}. Qualquer coisa me chama por aqui 🙂`
+    : `Oi ${primeiroNome}! Tudo bem?`;
+  const whatsappHref = linkWhatsApp(revendedora.whatsapp, mensagemWhatsApp);
+
   return (
     <div className="flex flex-col gap-6">
+      <VoltarLink href="/revendedoras" label="Revendedoras" />
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold text-neutral-900">{revendedora.nome_completo}</h1>
-        <form action={toggleStatus}>
-          <button
-            type="submit"
-            className={`rounded-full px-3 py-1 text-xs font-medium ${
-              revendedora.status === "Ativa"
-                ? "bg-red-50 text-red-700 hover:bg-red-100"
-                : "bg-green-50 text-green-700 hover:bg-green-100"
-            }`}
-          >
-            {revendedora.status === "Ativa" ? "Marcar como Inativa" : "Marcar como Ativa"}
-          </button>
-        </form>
+        <div className="flex items-center gap-2">
+          {whatsappHref && (
+            <a
+              href={whatsappHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-full bg-green-50 px-3 py-1 text-xs font-medium text-green-700 hover:bg-green-100"
+            >
+              WhatsApp
+            </a>
+          )}
+          <form action={toggleStatus}>
+            <button
+              type="submit"
+              className={`rounded-full px-3 py-1 text-xs font-medium ${
+                revendedora.status === "Ativa"
+                  ? "bg-red-50 text-red-700 hover:bg-red-100"
+                  : "bg-green-50 text-green-700 hover:bg-green-100"
+              }`}
+            >
+              {revendedora.status === "Ativa" ? "Marcar como Inativa" : "Marcar como Ativa"}
+            </button>
+          </form>
+        </div>
       </div>
 
       {(conferencias ?? []).length > 0 && (

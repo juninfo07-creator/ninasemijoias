@@ -20,6 +20,12 @@ export function ResetDangerZone() {
         Apaga permanentemente todas as revendedoras, mostruários, entregas, conferências, pagamentos e
         repasses. As configurações (percentuais e prazo) não são afetadas. Essa ação não pode ser desfeita.
       </p>
+      <a
+        href="/api/backup"
+        className="w-fit rounded-md border border-neutral-300 bg-white px-4 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50"
+      >
+        Baixar backup antes de apagar
+      </a>
       <form action={formAction} className="flex flex-col gap-2">
         <label htmlFor="confirmacao" className="text-xs font-medium text-red-800">
           Digite <span className="font-mono">{FRASE_CONFIRMACAO}</span> pra confirmar

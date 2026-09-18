@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import { ConferenciaForm } from "@/components/conferencias/ConferenciaForm";
+import { VoltarLink } from "@/components/layout/VoltarLink";
 
 export default async function NovaConferenciaPage({
   searchParams,
@@ -18,7 +19,7 @@ export default async function NovaConferenciaPage({
   const [{ data: entrega }, { data: configuracoes }] = await Promise.all([
     supabase
       .from("entregas")
-      .select("id, valor_atual, prazo_dias_aplicado, status, revendedoras(nome_completo), mostruarios(codigo, nome)")
+      .select("id, status, revendedoras(nome_completo), mostruarios(codigo, nome)")
       .eq("id", entregaId)
       .single(),
     supabase.from("configuracoes").select("*").eq("id", 1).single(),
@@ -34,6 +35,7 @@ export default async function NovaConferenciaPage({
 
   return (
     <div>
+      <VoltarLink href={`/entregas/${entregaId}`} label="Entrega" />
       <h1 className="mb-1 text-xl font-semibold text-neutral-900">Registrar conferência</h1>
       <p className="mb-6 text-sm text-neutral-500">
         {entrega.revendedoras?.nome_completo} — {entrega.mostruarios?.codigo} {entrega.mostruarios?.nome}
