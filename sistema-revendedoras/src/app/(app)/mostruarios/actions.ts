@@ -12,7 +12,6 @@ function fromFormData(formData: FormData) {
   return {
     nome: String(formData.get("nome") ?? "").trim(),
     tamanho: String(formData.get("tamanho") ?? "").trim() || null,
-    quantidade_pecas: Number(formData.get("quantidade_pecas")),
     valor_total: Number(formData.get("valor_total")),
     observacoes: String(formData.get("observacoes") ?? "").trim() || null,
   };
@@ -26,9 +25,6 @@ export async function criarMostruario(
 
   if (!dados.nome) {
     return { error: "Nome é obrigatório." };
-  }
-  if (!Number.isFinite(dados.quantidade_pecas) || dados.quantidade_pecas <= 0) {
-    return { error: "Quantidade de peças precisa ser maior que zero." };
   }
   if (!Number.isFinite(dados.valor_total) || dados.valor_total < 0) {
     return { error: "Valor total inválido." };
@@ -54,9 +50,6 @@ export async function atualizarMostruario(
 
   if (!dados.nome) {
     return { error: "Nome é obrigatório." };
-  }
-  if (!Number.isFinite(dados.quantidade_pecas) || dados.quantidade_pecas <= 0) {
-    return { error: "Quantidade de peças precisa ser maior que zero." };
   }
   if (!Number.isFinite(dados.valor_total) || dados.valor_total < 0) {
     return { error: "Valor total inválido." };

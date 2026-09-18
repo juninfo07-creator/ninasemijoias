@@ -23,20 +23,17 @@ export type Database = {
           entrega_id: string
           id: string
           observacoes: string | null
-          pecas_devolvidas: number
-          pecas_repostas: number
-          pecas_vendidas: number
           percentual_empresa_aplicado: number
           percentual_proprietaria_aplicado: number
           percentual_revendedora_aplicado: number
           percentual_socia_aplicado: number
           proxima_conferencia_prevista: string | null
-          quantidade_pecas_apos: number
           status: string
           tipo: string
           updated_at: string
           valor_atual_apos: number
           valor_comissao_revendedora: number
+          valor_devolvido: number
           valor_empresa: number
           valor_proprietaria: number
           valor_reposicao: number
@@ -51,20 +48,17 @@ export type Database = {
           entrega_id: string
           id?: string
           observacoes?: string | null
-          pecas_devolvidas?: number
-          pecas_repostas?: number
-          pecas_vendidas?: number
           percentual_empresa_aplicado: number
           percentual_proprietaria_aplicado: number
           percentual_revendedora_aplicado: number
           percentual_socia_aplicado: number
           proxima_conferencia_prevista?: string | null
-          quantidade_pecas_apos: number
           status?: string
           tipo: string
           updated_at?: string
           valor_atual_apos: number
           valor_comissao_revendedora: number
+          valor_devolvido?: number
           valor_empresa: number
           valor_proprietaria: number
           valor_reposicao?: number
@@ -79,20 +73,17 @@ export type Database = {
           entrega_id?: string
           id?: string
           observacoes?: string | null
-          pecas_devolvidas?: number
-          pecas_repostas?: number
-          pecas_vendidas?: number
           percentual_empresa_aplicado?: number
           percentual_proprietaria_aplicado?: number
           percentual_revendedora_aplicado?: number
           percentual_socia_aplicado?: number
           proxima_conferencia_prevista?: string | null
-          quantidade_pecas_apos?: number
           status?: string
           tipo?: string
           updated_at?: string
           valor_atual_apos?: number
           valor_comissao_revendedora?: number
+          valor_devolvido?: number
           valor_empresa?: number
           valor_proprietaria?: number
           valor_reposicao?: number
@@ -114,10 +105,11 @@ export type Database = {
           cnpj_empresa: string | null
           endereco_empresa: string | null
           id: number
+          limite_faixa_comissao: number
           nome_empresa: string | null
-          percentual_empresa: number
           percentual_proprietaria: number
-          percentual_revendedora: number
+          percentual_revendedora_abaixo: number
+          percentual_revendedora_acima: number
           percentual_socia: number
           prazo_padrao_dias: number
           telefone_empresa: string | null
@@ -127,10 +119,11 @@ export type Database = {
           cnpj_empresa?: string | null
           endereco_empresa?: string | null
           id?: number
+          limite_faixa_comissao?: number
           nome_empresa?: string | null
-          percentual_empresa?: number
           percentual_proprietaria?: number
-          percentual_revendedora?: number
+          percentual_revendedora_abaixo?: number
+          percentual_revendedora_acima?: number
           percentual_socia?: number
           prazo_padrao_dias?: number
           telefone_empresa?: string | null
@@ -140,10 +133,11 @@ export type Database = {
           cnpj_empresa?: string | null
           endereco_empresa?: string | null
           id?: number
+          limite_faixa_comissao?: number
           nome_empresa?: string | null
-          percentual_empresa?: number
           percentual_proprietaria?: number
-          percentual_revendedora?: number
+          percentual_revendedora_abaixo?: number
+          percentual_revendedora_acima?: number
           percentual_socia?: number
           prazo_padrao_dias?: number
           telefone_empresa?: string | null
@@ -162,8 +156,6 @@ export type Database = {
           mostruario_id: string
           observacoes: string | null
           prazo_dias_aplicado: number
-          quantidade_pecas_atual: number
-          quantidade_pecas_entrega: number
           responsavel: string | null
           revendedora_id: string
           status: string
@@ -181,8 +173,6 @@ export type Database = {
           mostruario_id: string
           observacoes?: string | null
           prazo_dias_aplicado: number
-          quantidade_pecas_atual: number
-          quantidade_pecas_entrega: number
           responsavel?: string | null
           revendedora_id: string
           status?: string
@@ -200,8 +190,6 @@ export type Database = {
           mostruario_id?: string
           observacoes?: string | null
           prazo_dias_aplicado?: number
-          quantidade_pecas_atual?: number
-          quantidade_pecas_entrega?: number
           responsavel?: string | null
           revendedora_id?: string
           status?: string
@@ -233,7 +221,6 @@ export type Database = {
           id: string
           nome: string
           observacoes: string | null
-          quantidade_pecas: number
           status: string
           tamanho: string | null
           updated_at: string
@@ -245,7 +232,6 @@ export type Database = {
           id?: string
           nome: string
           observacoes?: string | null
-          quantidade_pecas: number
           status?: string
           tamanho?: string | null
           updated_at?: string
@@ -257,7 +243,6 @@ export type Database = {
           id?: string
           nome?: string
           observacoes?: string | null
-          quantidade_pecas?: number
           status?: string
           tamanho?: string | null
           updated_at?: string

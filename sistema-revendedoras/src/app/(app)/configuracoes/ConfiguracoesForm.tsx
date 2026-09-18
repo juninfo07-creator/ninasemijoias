@@ -43,41 +43,56 @@ export function ConfiguracoesForm({ configuracoes }: { configuracoes: Configurac
   return (
     <form action={formAction} className="flex max-w-xl flex-col gap-6">
       <section className="flex flex-col gap-4">
-        <h2 className="text-sm font-semibold text-neutral-900">Percentuais</h2>
+        <h2 className="text-sm font-semibold text-neutral-900">Comissão escalonada da revendedora</h2>
+        <div className="grid grid-cols-3 gap-4">
+          <Field
+            label="Limite da faixa (R$)"
+            name="limite_faixa_comissao"
+            type="number"
+            step="0.01"
+            defaultValue={configuracoes.limite_faixa_comissao}
+          />
+          <Field
+            label="% abaixo do limite"
+            name="percentual_revendedora_abaixo"
+            type="number"
+            step="0.01"
+            defaultValue={configuracoes.percentual_revendedora_abaixo}
+          />
+          <Field
+            label="% a partir do limite"
+            name="percentual_revendedora_acima"
+            type="number"
+            step="0.01"
+            defaultValue={configuracoes.percentual_revendedora_acima}
+          />
+        </div>
+        <p className="text-xs text-neutral-500">
+          Em cada conferência, se o valor vendido for menor que o limite, a revendedora recebe o percentual
+          "abaixo"; se for igual ou maior, recebe o percentual "a partir do limite". O restante fica com a
+          empresa.
+        </p>
+      </section>
+
+      <section className="flex flex-col gap-4">
+        <h2 className="text-sm font-semibold text-neutral-900">Divisão da parte da empresa</h2>
         <div className="grid grid-cols-2 gap-4">
           <Field
-            label="Revendedora (%)"
-            name="percentual_revendedora"
-            type="number"
-            step="0.01"
-            defaultValue={configuracoes.percentual_revendedora}
-          />
-          <Field
-            label="Empresa (%)"
-            name="percentual_empresa"
-            type="number"
-            step="0.01"
-            defaultValue={configuracoes.percentual_empresa}
-          />
-          <Field
-            label="Proprietária, dentro da empresa (%)"
+            label="Proprietária (%)"
             name="percentual_proprietaria"
             type="number"
             step="0.01"
             defaultValue={configuracoes.percentual_proprietaria}
           />
           <Field
-            label="Sócia, dentro da empresa (%)"
+            label="Sócia (%)"
             name="percentual_socia"
             type="number"
             step="0.01"
             defaultValue={configuracoes.percentual_socia}
           />
         </div>
-        <p className="text-xs text-neutral-500">
-          Revendedora + Empresa deve somar 100%. Proprietária + Sócia (dentro da fatia da
-          empresa) também deve somar 100%.
-        </p>
+        <p className="text-xs text-neutral-500">Proprietária + Sócia deve somar 100%.</p>
       </section>
 
       <section className="flex flex-col gap-4">

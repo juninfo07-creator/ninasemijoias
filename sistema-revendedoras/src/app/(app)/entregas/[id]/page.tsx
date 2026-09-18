@@ -61,11 +61,7 @@ export default async function EntregaPage({ params }: { params: Promise<{ id: st
           </p>
         </div>
         <div>
-          <span className="text-neutral-500">Peças atualmente com a revendedora</span>
-          <p>{entrega.quantidade_pecas_atual}</p>
-        </div>
-        <div>
-          <span className="text-neutral-500">Valor atual</span>
+          <span className="text-neutral-500">Valor em posse da revendedora</span>
           <p>{entrega.valor_atual.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</p>
         </div>
       </div>

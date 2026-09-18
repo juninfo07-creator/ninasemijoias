@@ -65,13 +65,6 @@ export function MostruarioForm({
       <div className="grid grid-cols-2 gap-4">
         <Field label="Tamanho" name="tamanho" defaultValue={mostruario?.tamanho} />
         <Field
-          label="Quantidade de peças"
-          name="quantidade_pecas"
-          type="number"
-          defaultValue={mostruario?.quantidade_pecas}
-          required
-        />
-        <Field
           label="Valor total (R$)"
           name="valor_total"
           type="number"

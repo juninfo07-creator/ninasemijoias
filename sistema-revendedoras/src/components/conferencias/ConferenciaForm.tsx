@@ -2,22 +2,21 @@
 
 import { useActionState, useMemo, useState } from "react";
 import { registrarConferencia, type ConferenciaState } from "@/app/(app)/conferencias/actions";
-import { calcularConferencia, calcularSaldoPecas, calcularSaldoValor, type Percentuais } from "@/lib/financeiro/calculo";
+import { calcularConferencia, calcularSaldoValor, type FaixaComissao } from "@/lib/financeiro/calculo";
 import { hojeBrasilia, calcularProximaConferencia } from "@/lib/financeiro/datas";
 
 interface Entrega {
   id: string;
-  quantidade_pecas_atual: number;
   valor_atual: number;
   prazo_dias_aplicado: number;
 }
 
 export function ConferenciaForm({
   entrega,
-  percentuais,
+  faixas,
 }: {
   entrega: Entrega;
-  percentuais: Percentuais;
+  faixas: FaixaComissao;
 }) {
   const [state, formAction, pending] = useActionState<ConferenciaState | undefined, FormData>(
     registrarConferencia,
@@ -27,31 +26,16 @@ export function ConferenciaForm({
   const hoje = useMemo(() => hojeBrasilia(), []);
   const [tipo, setTipo] = useState<"Parcial" | "Final">("Parcial");
   const [dataRealizada, setDataRealizada] = useState(hoje);
-  const [pecasVendidas, setPecasVendidas] = useState(0);
-  const [pecasDevolvidas, setPecasDevolvidas] = useState(0);
-  const [pecasRepostas, setPecasRepostas] = useState(0);
   const [valorVendido, setValorVendido] = useState(0);
   const [descontos, setDescontos] = useState(0);
   const [acrescimos, setAcrescimos] = useState(0);
+  const [valorDevolvido, setValorDevolvido] = useState(0);
   const [valorReposicao, setValorReposicao] = useState(0);
 
-  const resultado = calcularConferencia(valorVendido, descontos, acrescimos, percentuais);
-
-  const quantidadePecasApos =
-    tipo === "Final"
-      ? 0
-      : calcularSaldoPecas(entrega.quantidade_pecas_atual, pecasVendidas, pecasDevolvidas, pecasRepostas);
+  const resultado = calcularConferencia(valorVendido, descontos, acrescimos, faixas);
 
   const valorAtualApos =
-    tipo === "Final"
-      ? 0
-      : calcularSaldoValor(
-          entrega.valor_atual,
-          entrega.quantidade_pecas_atual,
-          pecasVendidas,
-          pecasDevolvidas,
-          valorReposicao
-        );
+    tipo === "Final" ? 0 : calcularSaldoValor(entrega.valor_atual, valorVendido, valorDevolvido, valorReposicao);
 
   const proximaData = tipo === "Parcial" ? calcularProximaConferencia(dataRealizada, entrega.prazo_dias_aplicado) : null;
 
@@ -96,71 +80,6 @@ export function ConferenciaForm({
           className="rounded-md border border-neutral-300 px-3 py-2 text-sm"
         />
       </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div className="flex flex-col gap-1">
-          <label htmlFor="pecas_vendidas" className="text-sm font-medium text-neutral-700">
-            Peças vendidas
-          </label>
-          <input
-            id="pecas_vendidas"
-            name="pecas_vendidas"
-            type="number"
-            min={0}
-            value={pecasVendidas}
-            onChange={(e) => setPecasVendidas(Number(e.target.value))}
-            className="rounded-md border border-neutral-300 px-3 py-2 text-sm"
-          />
-        </div>
-        <div className="flex flex-col gap-1">
-          <label htmlFor="pecas_devolvidas" className="text-sm font-medium text-neutral-700">
-            Peças devolvidas
-          </label>
-          <input
-            id="pecas_devolvidas"
-            name="pecas_devolvidas"
-            type="number"
-            min={0}
-            value={pecasDevolvidas}
-            onChange={(e) => setPecasDevolvidas(Number(e.target.value))}
-            className="rounded-md border border-neutral-300 px-3 py-2 text-sm"
-          />
-        </div>
-      </div>
-
-      {tipo === "Parcial" && (
-        <div className="grid grid-cols-2 gap-4">
-          <div className="flex flex-col gap-1">
-            <label htmlFor="pecas_repostas" className="text-sm font-medium text-neutral-700">
-              Peças repostas
-            </label>
-            <input
-              id="pecas_repostas"
-              name="pecas_repostas"
-              type="number"
-              min={0}
-              value={pecasRepostas}
-              onChange={(e) => setPecasRepostas(Number(e.target.value))}
-              className="rounded-md border border-neutral-300 px-3 py-2 text-sm"
-            />
-          </div>
-          <div className="flex flex-col gap-1">
-            <label htmlFor="valor_reposicao" className="text-sm font-medium text-neutral-700">
-              Valor de catálogo repost. (R$)
-            </label>
-            <input
-              id="valor_reposicao"
-              name="valor_reposicao"
-              type="number"
-              step="0.01"
-              min={0}
-              value={valorReposicao}
-              onChange={(e) => setValorReposicao(Number(e.target.value))}
-              className="rounded-md border border-neutral-300 px-3 py-2 text-sm"
-            />
-          </div>
-        </div>
-      )}
 
       <div className="grid grid-cols-3 gap-4">
         <div className="flex flex-col gap-1">
@@ -210,6 +129,41 @@ export function ConferenciaForm({
         </div>
       </div>
 
+      {tipo === "Parcial" && (
+        <div className="grid grid-cols-2 gap-4">
+          <div className="flex flex-col gap-1">
+            <label htmlFor="valor_devolvido" className="text-sm font-medium text-neutral-700">
+              Valor devolvido (R$)
+            </label>
+            <input
+              id="valor_devolvido"
+              name="valor_devolvido"
+              type="number"
+              step="0.01"
+              min={0}
+              value={valorDevolvido}
+              onChange={(e) => setValorDevolvido(Number(e.target.value))}
+              className="rounded-md border border-neutral-300 px-3 py-2 text-sm"
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label htmlFor="valor_reposicao" className="text-sm font-medium text-neutral-700">
+              Valor de reposição (R$)
+            </label>
+            <input
+              id="valor_reposicao"
+              name="valor_reposicao"
+              type="number"
+              step="0.01"
+              min={0}
+              value={valorReposicao}
+              onChange={(e) => setValorReposicao(Number(e.target.value))}
+              className="rounded-md border border-neutral-300 px-3 py-2 text-sm"
+            />
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-col gap-1">
         <label htmlFor="observacoes" className="text-sm font-medium text-neutral-700">
           Observações
@@ -225,6 +179,8 @@ export function ConferenciaForm({
       <div className="rounded-md border border-neutral-200 bg-neutral-50 p-4 text-sm">
         <h3 className="mb-2 font-semibold text-neutral-900">Resumo do cálculo</h3>
         <div className="grid grid-cols-2 gap-y-1">
+          <span className="text-neutral-500">Faixa de comissão aplicada</span>
+          <span className="text-right">{resultado.percentualRevendedoraAplicado}%</span>
           <span className="text-neutral-500">Comissão da revendedora</span>
           <span className="text-right">{fmt(resultado.valorComissaoRevendedora)}</span>
           <span className="text-neutral-500">A pagar à empresa</span>
@@ -233,8 +189,6 @@ export function ConferenciaForm({
           <span className="text-right">{fmt(resultado.valorProprietaria)}</span>
           <span className="text-neutral-500">Parte da sócia</span>
           <span className="text-right">{fmt(resultado.valorSocia)}</span>
-          <span className="text-neutral-500">Saldo de peças após</span>
-          <span className="text-right">{tipo === "Final" ? "0 (encerra)" : quantidadePecasApos}</span>
           <span className="text-neutral-500">Saldo em valor após</span>
           <span className="text-right">{tipo === "Final" ? fmt(0) : fmt(valorAtualApos)}</span>
           {proximaData && (
@@ -244,6 +198,10 @@ export function ConferenciaForm({
             </>
           )}
         </div>
+        <p className="mt-2 text-xs text-neutral-500">
+          Vendas abaixo de {fmt(faixas.limiteFaixaComissao)} pagam {faixas.percentualRevendedoraAbaixo}% de
+          comissão; a partir disso, {faixas.percentualRevendedoraAcima}%.
+        </p>
         {tipo === "Final" && (
           <p className="mt-2 text-xs text-neutral-500">
             Conferência Final encerra a entrega e libera o mostruário para "Disponível".

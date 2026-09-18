@@ -8,7 +8,7 @@ export default async function NovaEntregaPage() {
     supabase.from("revendedoras").select("id, nome_completo").eq("status", "Ativa").order("nome_completo"),
     supabase
       .from("mostruarios")
-      .select("id, codigo, nome, quantidade_pecas, valor_total")
+      .select("id, codigo, nome, valor_total")
       .eq("status", "Disponível")
       .order("codigo"),
     supabase.from("configuracoes").select("prazo_padrao_dias").eq("id", 1).single(),

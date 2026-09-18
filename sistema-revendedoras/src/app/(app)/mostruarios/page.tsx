@@ -13,7 +13,7 @@ export default async function MostruariosPage() {
   const supabase = await createClient();
   const { data: mostruarios } = await supabase
     .from("mostruarios")
-    .select("id, codigo, nome, quantidade_pecas, valor_total, status")
+    .select("id, codigo, nome, valor_total, status")
     .order("codigo");
 
   return (
@@ -37,7 +37,6 @@ export default async function MostruariosPage() {
               <tr>
                 <th className="px-4 py-2">Código</th>
                 <th className="px-4 py-2">Nome</th>
-                <th className="px-4 py-2">Peças</th>
                 <th className="px-4 py-2">Valor</th>
                 <th className="px-4 py-2">Status</th>
               </tr>
@@ -51,7 +50,6 @@ export default async function MostruariosPage() {
                     </Link>
                   </td>
                   <td className="px-4 py-2 text-neutral-600">{m.nome}</td>
-                  <td className="px-4 py-2 text-neutral-600">{m.quantidade_pecas}</td>
                   <td className="px-4 py-2 text-neutral-600">
                     {m.valor_total.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
                   </td>

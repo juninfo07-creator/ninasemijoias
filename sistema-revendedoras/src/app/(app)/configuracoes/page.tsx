@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import { ConfiguracoesForm } from "./ConfiguracoesForm";
+import { ResetDangerZone } from "@/components/configuracoes/ResetDangerZone";
 
 export default async function ConfiguracoesPage() {
   const supabase = await createClient();
@@ -14,9 +15,12 @@ export default async function ConfiguracoesPage() {
   }
 
   return (
-    <div>
-      <h1 className="mb-6 text-xl font-semibold text-neutral-900">Configurações</h1>
-      <ConfiguracoesForm configuracoes={configuracoes} />
+    <div className="flex flex-col gap-8">
+      <div>
+        <h1 className="mb-6 text-xl font-semibold text-neutral-900">Configurações</h1>
+        <ConfiguracoesForm configuracoes={configuracoes} />
+      </div>
+      <ResetDangerZone />
     </div>
   );
 }

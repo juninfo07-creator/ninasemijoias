@@ -1,12 +1,15 @@
-export interface Percentuais {
-  percentualRevendedora: number;
-  percentualEmpresa: number;
+export interface FaixaComissao {
+  limiteFaixaComissao: number;
+  percentualRevendedoraAbaixo: number;
+  percentualRevendedoraAcima: number;
   percentualProprietaria: number; // % da fatia empresa
   percentualSocia: number; // % da fatia empresa
 }
 
 export interface ResultadoCalculoConferencia {
   baseCalculo: number;
+  percentualRevendedoraAplicado: number;
+  percentualEmpresaAplicado: number;
   valorComissaoRevendedora: number;
   valorEmpresa: number;
   valorProprietaria: number;
@@ -21,34 +24,36 @@ export function calcularConferencia(
   valorVendido: number,
   descontos: number,
   acrescimos: number,
-  percentuais: Percentuais
+  faixas: FaixaComissao
 ): ResultadoCalculoConferencia {
+  const percentualRevendedoraAplicado =
+    valorVendido < faixas.limiteFaixaComissao
+      ? faixas.percentualRevendedoraAbaixo
+      : faixas.percentualRevendedoraAcima;
+  const percentualEmpresaAplicado = 100 - percentualRevendedoraAplicado;
+
   const baseCalculo = round2(valorVendido - descontos + acrescimos);
-  const valorComissaoRevendedora = round2((baseCalculo * percentuais.percentualRevendedora) / 100);
-  const valorEmpresa = round2((baseCalculo * percentuais.percentualEmpresa) / 100);
-  const valorProprietaria = round2((valorEmpresa * percentuais.percentualProprietaria) / 100);
+  const valorComissaoRevendedora = round2((baseCalculo * percentualRevendedoraAplicado) / 100);
+  const valorEmpresa = round2((baseCalculo * percentualEmpresaAplicado) / 100);
+  const valorProprietaria = round2((valorEmpresa * faixas.percentualProprietaria) / 100);
   const valorSocia = round2(valorEmpresa - valorProprietaria);
 
-  return { baseCalculo, valorComissaoRevendedora, valorEmpresa, valorProprietaria, valorSocia };
-}
-
-export function calcularSaldoPecas(
-  quantidadeAtual: number,
-  pecasVendidas: number,
-  pecasDevolvidas: number,
-  pecasRepostas: number
-): number {
-  return quantidadeAtual - pecasVendidas - pecasDevolvidas + pecasRepostas;
+  return {
+    baseCalculo,
+    percentualRevendedoraAplicado,
+    percentualEmpresaAplicado,
+    valorComissaoRevendedora,
+    valorEmpresa,
+    valorProprietaria,
+    valorSocia,
+  };
 }
 
 export function calcularSaldoValor(
   valorAtual: number,
-  quantidadeAtual: number,
-  pecasVendidas: number,
-  pecasDevolvidas: number,
+  valorVendido: number,
+  valorDevolvido: number,
   valorReposicao: number
 ): number {
-  if (quantidadeAtual <= 0) return round2(valorReposicao);
-  const valorMedioPeca = valorAtual / quantidadeAtual;
-  return round2(valorAtual - valorMedioPeca * (pecasVendidas + pecasDevolvidas) + valorReposicao);
+  return round2(valorAtual - valorVendido - valorDevolvido + valorReposicao);
 }

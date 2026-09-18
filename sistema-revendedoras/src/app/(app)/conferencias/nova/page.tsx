@@ -18,7 +18,7 @@ export default async function NovaConferenciaPage({
   const [{ data: entrega }, { data: configuracoes }] = await Promise.all([
     supabase
       .from("entregas")
-      .select("id, quantidade_pecas_atual, valor_atual, prazo_dias_aplicado, status, revendedoras(nome_completo), mostruarios(codigo, nome)")
+      .select("id, valor_atual, prazo_dias_aplicado, status, revendedoras(nome_completo), mostruarios(codigo, nome)")
       .eq("id", entregaId)
       .single(),
     supabase.from("configuracoes").select("*").eq("id", 1).single(),
@@ -40,9 +40,10 @@ export default async function NovaConferenciaPage({
       </p>
       <ConferenciaForm
         entrega={entrega}
-        percentuais={{
-          percentualRevendedora: configuracoes.percentual_revendedora,
-          percentualEmpresa: configuracoes.percentual_empresa,
+        faixas={{
+          limiteFaixaComissao: configuracoes.limite_faixa_comissao,
+          percentualRevendedoraAbaixo: configuracoes.percentual_revendedora_abaixo,
+          percentualRevendedoraAcima: configuracoes.percentual_revendedora_acima,
           percentualProprietaria: configuracoes.percentual_proprietaria,
           percentualSocia: configuracoes.percentual_socia,
         }}

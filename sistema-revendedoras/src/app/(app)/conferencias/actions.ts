@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/utils/supabase/server";
-import { calcularConferencia, calcularSaldoPecas, calcularSaldoValor } from "@/lib/financeiro/calculo";
+import { calcularConferencia, calcularSaldoValor } from "@/lib/financeiro/calculo";
 import { calcularProximaConferencia } from "@/lib/financeiro/datas";
 
 export interface ConferenciaState {
@@ -17,12 +17,10 @@ export async function registrarConferencia(
   const entregaId = String(formData.get("entrega_id") ?? "");
   const tipo = String(formData.get("tipo") ?? "");
   const dataRealizada = String(formData.get("data_realizada") ?? "");
-  const pecasVendidas = Number(formData.get("pecas_vendidas") || 0);
-  const pecasDevolvidas = Number(formData.get("pecas_devolvidas") || 0);
-  const pecasRepostas = Number(formData.get("pecas_repostas") || 0);
   const valorVendido = Number(formData.get("valor_vendido") || 0);
   const descontos = Number(formData.get("descontos") || 0);
   const acrescimos = Number(formData.get("acrescimos") || 0);
+  const valorDevolvido = Number(formData.get("valor_devolvido") || 0);
   const valorReposicao = Number(formData.get("valor_reposicao") || 0);
   const observacoes = String(formData.get("observacoes") ?? "").trim() || null;
 
@@ -57,30 +55,20 @@ export async function registrarConferencia(
   }
 
   const resultado = calcularConferencia(valorVendido, descontos, acrescimos, {
-    percentualRevendedora: configuracoes.percentual_revendedora,
-    percentualEmpresa: configuracoes.percentual_empresa,
+    limiteFaixaComissao: configuracoes.limite_faixa_comissao,
+    percentualRevendedoraAbaixo: configuracoes.percentual_revendedora_abaixo,
+    percentualRevendedoraAcima: configuracoes.percentual_revendedora_acima,
     percentualProprietaria: configuracoes.percentual_proprietaria,
     percentualSocia: configuracoes.percentual_socia,
   });
 
-  const quantidadePecasApos =
-    tipo === "Final"
-      ? 0
-      : calcularSaldoPecas(entrega.quantidade_pecas_atual, pecasVendidas, pecasDevolvidas, pecasRepostas);
-
   const valorAtualApos =
     tipo === "Final"
       ? 0
-      : calcularSaldoValor(
-          entrega.valor_atual,
-          entrega.quantidade_pecas_atual,
-          pecasVendidas,
-          pecasDevolvidas,
-          valorReposicao
-        );
+      : calcularSaldoValor(entrega.valor_atual, valorVendido, valorDevolvido, valorReposicao);
 
-  if (tipo === "Parcial" && quantidadePecasApos < 0) {
-    return { error: "A soma de peças vendidas e devolvidas não pode ser maior que o saldo atual." };
+  if (tipo === "Parcial" && valorAtualApos < 0) {
+    return { error: "O valor vendido + devolvido não pode ser maior que o saldo atual com a revendedora." };
   }
 
   const proximaConferenciaPrevista =
@@ -92,17 +80,14 @@ export async function registrarConferencia(
       entrega_id: entregaId,
       tipo,
       data_realizada: dataRealizada,
-      pecas_vendidas: pecasVendidas,
-      pecas_devolvidas: pecasDevolvidas,
-      pecas_repostas: tipo === "Parcial" ? pecasRepostas : 0,
       valor_vendido: valorVendido,
       descontos,
       acrescimos,
+      valor_devolvido: tipo === "Parcial" ? valorDevolvido : 0,
       valor_reposicao: tipo === "Parcial" ? valorReposicao : 0,
-      quantidade_pecas_apos: quantidadePecasApos,
       valor_atual_apos: valorAtualApos,
-      percentual_revendedora_aplicado: configuracoes.percentual_revendedora,
-      percentual_empresa_aplicado: configuracoes.percentual_empresa,
+      percentual_revendedora_aplicado: resultado.percentualRevendedoraAplicado,
+      percentual_empresa_aplicado: resultado.percentualEmpresaAplicado,
       percentual_proprietaria_aplicado: configuracoes.percentual_proprietaria,
       percentual_socia_aplicado: configuracoes.percentual_socia,
       valor_comissao_revendedora: resultado.valorComissaoRevendedora,
@@ -122,5 +107,6 @@ export async function registrarConferencia(
   revalidatePath(`/entregas/${entregaId}`);
   revalidatePath("/entregas");
   revalidatePath("/mostruarios");
+  revalidatePath("/conferencias");
   redirect(`/conferencias/${novaConferencia.id}`);
 }

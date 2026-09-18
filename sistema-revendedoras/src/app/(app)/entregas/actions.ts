@@ -19,7 +19,6 @@ export async function criarEntrega(
   const prazoDiasAplicado = Number(formData.get("prazo_dias_aplicado"));
   const responsavel = String(formData.get("responsavel") ?? "").trim() || null;
   const observacoes = String(formData.get("observacoes") ?? "").trim() || null;
-  const quantidadePecasEntrega = Number(formData.get("quantidade_pecas_entrega"));
   const valorTotalEntrega = Number(formData.get("valor_total_entrega"));
   const excecaoAutorizada = formData.get("excecao_autorizada") === "on";
 
@@ -43,9 +42,7 @@ export async function criarEntrega(
       prazo_dias_aplicado: prazoDiasAplicado,
       responsavel,
       observacoes,
-      quantidade_pecas_entrega: quantidadePecasEntrega,
       valor_total_entrega: valorTotalEntrega,
-      quantidade_pecas_atual: quantidadePecasEntrega,
       valor_atual: valorTotalEntrega,
       excecao_autorizada: excecaoAutorizada,
     })

@@ -13,7 +13,6 @@ interface Mostruario {
   id: string;
   codigo: string;
   nome: string;
-  quantidade_pecas: number;
   valor_total: number;
 }
 
@@ -81,11 +80,6 @@ export function EntregaForm({
         </select>
       </div>
 
-      <input
-        type="hidden"
-        name="quantidade_pecas_entrega"
-        value={mostruarioSelecionado?.quantidade_pecas ?? ""}
-      />
       <input type="hidden" name="valor_total_entrega" value={mostruarioSelecionado?.valor_total ?? ""} />
 
       <div className="grid grid-cols-2 gap-4">

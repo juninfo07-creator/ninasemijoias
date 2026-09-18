@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/server";
 import { CardResumo } from "@/components/dashboard/CardResumo";
+import { FaturamentoChart } from "@/components/dashboard/FaturamentoChart";
 import { classificarStatusConferencia, formatarDataBR } from "@/lib/financeiro/datas";
 
 const STATUS_COLOR: Record<string, string> = {
@@ -23,6 +24,7 @@ export default async function DashboardPage() {
     { data: conferenciasAtivas },
     { data: pendencias },
     { data: repasses },
+    { data: revendedorasTodas },
   ] = await Promise.all([
     supabase.from("revendedoras").select("id", { count: "exact", head: true }).eq("status", "Ativa"),
     supabase.from("mostruarios").select("id", { count: "exact", head: true }).eq("status", "Com revendedora"),
@@ -39,6 +41,7 @@ export default async function DashboardPage() {
       .eq("status", "Ativa"),
     supabase.from("v_conferencias_saldo").select("valor_pendente").eq("mais_recente", true),
     supabase.from("repasses").select("valor").eq("status", "Ativo"),
+    supabase.from("revendedoras").select("id, nome_completo").order("nome_completo"),
   ]);
 
   const proximasConferencias = (entregasAbertas ?? []).map((e) => ({
@@ -74,6 +77,8 @@ export default async function DashboardPage() {
         <CardResumo label="Valor da sócia (pendente de repasse)" valor={fmt(valorSociaPendente)} />
         <CardResumo label="Total de comissões" valor={fmt(totalComissoes)} />
       </div>
+
+      <FaturamentoChart revendedoras={revendedorasTodas ?? []} />
 
       <div>
         <h2 className="mb-3 text-sm font-semibold text-neutral-900">Próximas conferências</h2>
