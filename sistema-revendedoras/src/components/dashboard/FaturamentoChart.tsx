@@ -136,6 +136,7 @@ export function FaturamentoChart({ revendedoras }: { revendedoras: Revendedora[]
               <Tooltip
                 formatter={(value) => fmt(Number(value))}
                 labelFormatter={(mes) => formatarMes(String(mes))}
+                cursor={{ fill: "rgba(11,11,11,0.04)" }}
                 contentStyle={{
                   background: "#fcfcfb",
                   border: "1px solid rgba(11,11,11,0.10)",

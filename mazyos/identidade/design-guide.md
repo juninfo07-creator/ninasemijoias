@@ -49,7 +49,8 @@
 
 ## Logo
 
-- **Arquivo:** *(ex: identidade/logo.png ou identidade/logo.svg)*
+- **Arquivo:** identidade/logo.png
+- **Versão pra fundo claro:** identidade/logo-preta.png
 - **Versão pra fundo escuro:** *(se tiver — ex: identidade/logo-branco.png)*
 - **Onde usar:** slide final do carrossel (CTA), header de propostas, slides de apresentação
 - **Tamanho sugerido:** largura entre 120-200px nos HTMLs

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { signOut } from "@/app/(app)/actions";
@@ -16,6 +17,19 @@ const NAV_ITEMS = [
   { href: "/configuracoes", label: "Configurações" },
 ] as const;
 
+function Logo() {
+  return (
+    <Image
+      src="/identidade/logo-preta.png"
+      alt="Nina Semijoias"
+      width={1672}
+      height={941}
+      priority
+      className="h-8 w-auto"
+    />
+  );
+}
+
 function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
 
@@ -28,8 +42,10 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
             key={item.href}
             href={item.href}
             onClick={onNavigate}
-            className={`rounded-md px-3 py-2 text-sm ${
-              active ? "bg-neutral-900 text-white" : "text-neutral-600 hover:bg-neutral-100"
+            className={`rounded-md border-l-[3px] px-3 py-2 text-sm ${
+              active
+                ? "border-[#A6790A] bg-neutral-900 text-white"
+                : "border-transparent text-neutral-600 hover:bg-neutral-100"
             }`}
           >
             {item.label}
@@ -47,7 +63,7 @@ export function Sidebar() {
     <>
       {/* Barra superior mobile */}
       <div className="flex items-center justify-between border-b border-neutral-200 bg-white px-4 py-3 sm:hidden">
-        <span className="text-sm font-semibold text-neutral-900">Nina Semijoias</span>
+        <Logo />
         <button
           type="button"
           onClick={() => setAberto(true)}
@@ -65,7 +81,7 @@ export function Sidebar() {
         <div className="fixed inset-0 z-40 sm:hidden">
           <div className="absolute inset-0 bg-black/30" onClick={() => setAberto(false)} />
           <aside className="absolute left-0 top-0 flex h-full w-64 flex-col gap-4 bg-white p-4 shadow-lg">
-            <span className="text-sm font-semibold text-neutral-900">Nina Semijoias</span>
+            <Logo />
             <NavLinks onNavigate={() => setAberto(false)} />
             <form action={signOut} className="mt-auto">
               <button type="submit" className="text-sm text-neutral-500 hover:text-neutral-900">
@@ -78,7 +94,7 @@ export function Sidebar() {
 
       {/* Sidebar fixa desktop */}
       <aside className="hidden w-56 shrink-0 flex-col gap-4 border-r border-neutral-200 bg-white p-4 sm:flex">
-        <span className="text-sm font-semibold text-neutral-900">Nina Semijoias</span>
+        <Logo />
         <NavLinks />
         <form action={signOut} className="mt-auto">
           <button type="submit" className="text-sm text-neutral-500 hover:text-neutral-900">
