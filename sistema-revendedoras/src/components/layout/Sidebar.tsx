@@ -25,7 +25,7 @@ function Logo() {
       width={1672}
       height={941}
       priority
-      className="h-14 w-auto self-start"
+      className="h-20 w-auto self-center"
     />
   );
 }
